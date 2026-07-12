@@ -37,7 +37,7 @@ export default function Statistics() {
   return (
     <div className="space-y-8 animate-slide-up">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="bg-gradient-to-br from-orange-400 to-rose-500 p-8 rounded-[2rem] shadow-xl shadow-orange-200/50 text-white flex items-center gap-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-200/50">
+        <div className="bg-gradient-to-br from-orange-400 to-rose-500 p-8 rounded-[2rem] shadow-xl shadow-orange-200/50 dark:shadow-none text-white flex items-center gap-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-orange-200/50 dark:hover:shadow-none">
           <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30">
             <Flame className="w-8 h-8 text-white drop-shadow-md" />
           </div>
@@ -47,7 +47,7 @@ export default function Statistics() {
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[2rem] shadow-xl shadow-indigo-200/50 text-white flex items-center gap-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/50">
+        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-[2rem] shadow-xl shadow-indigo-200/50 dark:shadow-none text-white flex items-center gap-6 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-200/50 dark:hover:shadow-none">
           <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30">
             <Trophy className="w-8 h-8 text-white drop-shadow-md" />
           </div>
@@ -60,23 +60,23 @@ export default function Statistics() {
         </div>
       </div>
 
-      <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white/50 p-8 sm:p-10">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white/50 dark:border-slate-800/50 p-8 sm:p-10 transition-colors duration-300">
         <div className="flex items-center gap-3 mb-10">
-          <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-xl transition-colors">
             <Target className="w-6 h-6" />
           </div>
-          <h3 className="text-2xl font-extrabold text-slate-800">Biểu đồ tiến độ</h3>
+          <h3 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 transition-colors">Biểu đồ tiến độ</h3>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-slate-400 font-medium animate-pulse">Đang tải dữ liệu...</div>
+          <div className="text-center py-12 text-slate-400 dark:text-slate-500 font-medium animate-pulse transition-colors">Đang tải dữ liệu...</div>
         ) : (
           <div className="flex items-end justify-between h-56 gap-2 sm:gap-4 mt-8">
             {stats.map((stat, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
                 <div className="w-full relative h-full flex items-end justify-center">
                   <div 
-                    className="w-full max-w-[48px] bg-slate-100 rounded-2xl overflow-hidden relative"
+                    className="w-full max-w-[48px] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden relative transition-colors"
                     style={{ height: '100%' }}
                   >
                     <div 
@@ -85,12 +85,12 @@ export default function Statistics() {
                     ></div>
                   </div>
                   {/* Tooltip */}
-                  <div className="absolute -top-12 bg-slate-800 text-white text-sm font-bold py-1.5 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-xl pointer-events-none z-10 whitespace-nowrap">
+                  <div className="absolute -top-12 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-bold py-1.5 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-xl pointer-events-none z-10 whitespace-nowrap">
                     {stat.percentage}%
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 dark:bg-slate-100 rotate-45 transition-colors"></div>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider transition-colors">
                   {format(parseISO(stat.date), 'EEE')}
                 </div>
               </div>

@@ -47,42 +47,42 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
   const isAllDone = totalCount > 0 && completedCount === totalCount;
 
   return (
-    <div className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white/50 overflow-hidden relative">
+    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white/50 dark:border-slate-800/50 overflow-hidden relative transition-colors duration-300">
       {isAllDone && (
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent pointer-events-none z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 dark:from-emerald-900/20 to-transparent pointer-events-none z-0 transition-colors"></div>
       )}
 
-      <div className="px-6 py-8 sm:p-8 border-b border-indigo-50 flex items-center justify-between relative z-10">
-        <button onClick={onPrevDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 text-indigo-400 hover:text-indigo-600 rounded-full transition-all bg-slate-50 shadow-sm border border-slate-100 hover:border-indigo-200">
+      <div className="px-6 py-8 sm:p-8 border-b border-indigo-50 dark:border-slate-800 flex items-center justify-between relative z-10 transition-colors">
+        <button onClick={onPrevDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <div className="text-center space-y-1">
-          <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+          <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight transition-colors">
             {format(currentDate, 'EEEE')}
           </h2>
-          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+          <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider transition-colors">
             {format(currentDate, 'MMMM d, yyyy')}
           </p>
         </div>
-        <button onClick={onNextDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 text-indigo-400 hover:text-indigo-600 rounded-full transition-all bg-slate-50 shadow-sm border border-slate-100 hover:border-indigo-200">
+        <button onClick={onNextDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600">
           <ChevronRight className="w-6 h-6" />
         </button>
       </div>
 
-      <div className="px-6 py-8 sm:px-10 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 relative z-10 border-b border-indigo-50/50">
+      <div className="px-6 py-8 sm:px-10 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 relative z-10 border-b border-indigo-50/50 dark:border-slate-800 transition-colors duration-300">
         <div className="flex justify-between items-end mb-4">
           <div>
-            <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">Mục tiêu hôm nay</div>
-            <div className="text-3xl font-extrabold text-slate-800">
-              {progress}% <span className="text-base font-semibold text-slate-500 tracking-normal">hoàn thành</span>
+            <div className="text-xs font-bold text-indigo-400 dark:text-indigo-300 uppercase tracking-wider mb-1 transition-colors">Mục tiêu hôm nay</div>
+            <div className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 transition-colors">
+              {progress}% <span className="text-base font-semibold text-slate-500 dark:text-slate-400 tracking-normal transition-colors">hoàn thành</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 bg-indigo-100/50 px-4 py-2 rounded-xl border border-indigo-100">
+          <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-100/50 dark:bg-indigo-900/30 px-4 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800/50 transition-colors">
             <Target className="w-4 h-4" />
             {completedCount} / {totalCount} Task
           </div>
         </div>
-        <div className="w-full bg-slate-200/80 rounded-full h-4 overflow-hidden shadow-inner p-0.5">
+        <div className="w-full bg-slate-200/80 dark:bg-slate-800 rounded-full h-4 overflow-hidden shadow-inner p-0.5 transition-colors duration-300">
           <div 
             className={cn(
               "h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden",
@@ -95,16 +95,16 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
         </div>
       </div>
 
-      <div className="p-6 sm:p-10 space-y-4 relative z-10 bg-slate-50/30">
+      <div className="p-6 sm:p-10 space-y-4 relative z-10 bg-slate-50/30 dark:bg-slate-900/50 transition-colors duration-300">
         {loading ? (
-          <div className="text-center py-12 text-slate-400 font-medium animate-pulse">Đang tải lịch trình...</div>
+          <div className="text-center py-12 text-slate-400 dark:text-slate-500 font-medium animate-pulse">Đang tải lịch trình...</div>
         ) : tasks.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-indigo-100 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-12">
+            <div className="w-16 h-16 bg-indigo-100 dark:bg-slate-800 text-indigo-500 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-12 transition-colors">
               <span className="text-2xl">☕</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-700">Ngày nghỉ hoàn hảo!</h3>
-            <p className="text-slate-500 font-medium">Không có task nào được lên lịch. Hãy dành thời gian thư giãn.</p>
+            <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200 transition-colors">Ngày nghỉ hoàn hảo!</h3>
+            <p className="text-slate-500 dark:text-slate-400 font-medium transition-colors">Không có task nào được lên lịch. Hãy dành thời gian thư giãn.</p>
           </div>
         ) : (
           tasks.map((task, idx) => (
@@ -114,8 +114,8 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
               className={cn(
                 "group flex items-start gap-4 sm:gap-6 p-5 sm:p-6 rounded-[1.5rem] cursor-pointer transition-all duration-300 animate-slide-up",
                 task.completed 
-                  ? "bg-white/40 shadow-sm border border-slate-200/50 opacity-70" 
-                  : "bg-white shadow-md shadow-indigo-100/40 border border-indigo-50 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100/60"
+                  ? "bg-white/40 dark:bg-slate-800/40 shadow-sm border border-slate-200/50 dark:border-slate-700/50 opacity-70" 
+                  : "bg-white dark:bg-slate-800 shadow-md shadow-indigo-100/40 dark:shadow-none border border-indigo-50 dark:border-slate-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100/60 dark:hover:border-slate-500"
               )}
               style={{ animationDelay: `${idx * 50}ms` }}
             >
@@ -124,19 +124,19 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
                   "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-400",
                   task.completed 
                     ? "bg-emerald-500 border-emerald-500 scale-110" 
-                    : "border-slate-300 group-hover:border-indigo-400 bg-slate-50 group-hover:bg-indigo-50"
+                    : "border-slate-300 dark:border-slate-600 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 bg-slate-50 dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-slate-800"
                 )}>
                   <Check className={cn("w-4 h-4 text-white transition-transform duration-300", task.completed ? "scale-100" : "scale-0")} strokeWidth={4} />
                 </div>
                 {task.completed && (
-                  <div className="absolute inset-0 rounded-full border-2 border-emerald-400 animate-[pulse-ring_1s_ease-out]"></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-emerald-400 dark:border-emerald-500 animate-[pulse-ring_1s_ease-out]"></div>
                 )}
               </div>
               
               <div className="flex-1">
                 <div className={cn(
                   "flex items-center gap-2 text-xs font-bold mb-2 uppercase tracking-wider transition-colors",
-                  task.completed ? "text-slate-400" : "text-indigo-500"
+                  task.completed ? "text-slate-400 dark:text-slate-500" : "text-indigo-500 dark:text-indigo-400"
                 )}>
                   <Clock className="w-3.5 h-3.5" />
                   {task.time}
@@ -144,13 +144,13 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
                 <div className="relative inline-block">
                   <span className={cn(
                     "text-lg sm:text-xl font-bold transition-all duration-300",
-                    task.completed ? "text-slate-400" : "text-slate-800"
+                    task.completed ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
                   )}>
                     {task.content}
                   </span>
                   <span className={cn(
                     "absolute left-0 top-1/2 h-0.5 transition-all duration-300 ease-out rounded-full",
-                    task.completed ? "w-full bg-slate-400" : "w-0 bg-transparent"
+                    task.completed ? "w-full bg-slate-400 dark:bg-slate-500" : "w-0 bg-transparent"
                   )}></span>
                 </div>
               </div>
