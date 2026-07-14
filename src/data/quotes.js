@@ -1,4 +1,6 @@
 export const quotes = [
+  "Ngừng bào chữa, hãy nhận lấy trách nhiệm về mình, tìm cách khắc phục những thứ chưa làm được",
+  "Hãy làm mọi thứ hoàn hảo 100%, hầu hết mng chỉ làm được 95%",
   "Kỷ luật là cầu nối giữa mục tiêu và thành tựu.",
   "Không có đường tắt đến bất kỳ nơi nào đáng giá.",
   "Hành trình vạn dặm bắt đầu từ một bước chân.",
