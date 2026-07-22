@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../lib/api';
-import { format, parseISO } from 'date-fns';
+import { parseISO, getDay } from 'date-fns';
 import { Trophy, Flame, Target } from 'lucide-react';
+
+const DAY_LABELS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 export default function Statistics() {
   const [stats, setStats] = useState([]);
@@ -71,9 +73,9 @@ export default function Statistics() {
         {loading ? (
           <div className="text-center py-12 text-slate-400 dark:text-slate-500 font-medium animate-pulse transition-colors">Đang tải dữ liệu...</div>
         ) : (
-          <div className="flex items-end justify-between h-56 gap-2 sm:gap-4 mt-8">
+          <div className="flex items-end justify-between h-56 gap-1.5 sm:gap-4 mt-8 overflow-visible">
             {stats.map((stat, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+              <div key={i} className="flex-1 min-w-0 flex flex-col items-center gap-3 sm:gap-4 group">
                 <div className="w-full relative h-full flex items-end justify-center">
                   <div 
                     className="w-full max-w-[48px] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden relative transition-colors"
@@ -84,14 +86,13 @@ export default function Statistics() {
                       style={{ height: `${stat.percentage}%`, minHeight: stat.percentage > 0 ? '8px' : '0' }}
                     ></div>
                   </div>
-                  {/* Tooltip */}
                   <div className="absolute -top-12 bg-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-bold py-1.5 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-xl pointer-events-none z-10 whitespace-nowrap">
                     {stat.percentage}%
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 dark:bg-slate-100 rotate-45 transition-colors"></div>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider transition-colors">
-                  {format(parseISO(stat.date), 'EEE')}
+                <div className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 tracking-wide transition-colors tabular-nums">
+                  {DAY_LABELS[getDay(parseISO(stat.date))]}
                 </div>
               </div>
             ))}

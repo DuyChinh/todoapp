@@ -35,24 +35,24 @@ export default function ScheduleView() {
 
   return (
     <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white/50 dark:border-slate-800/50 overflow-hidden animate-slide-up transition-colors duration-300">
-      <div className="p-8 sm:p-10 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50 dark:from-slate-800/50 to-white dark:to-slate-900 transition-colors">
-        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mb-2 transition-colors">Lịch Học Cố Định</h2>
+      <div className="p-6 sm:p-10 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50 dark:from-slate-800/50 to-white dark:to-slate-900 transition-colors">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mb-2 transition-colors">Lịch Học Cố Định</h2>
         <p className="text-slate-500 dark:text-slate-400 font-medium transition-colors">Khung giờ chuẩn được thiết lập tự động cho mỗi tuần.</p>
       </div>
       
-      <div className="p-8 sm:p-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="p-4 sm:p-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {templates.map((template, idx) => (
             <div 
               key={template._id} 
-              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-500 transition-all duration-300 overflow-hidden group"
+              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-500 transition-all duration-300 overflow-hidden group min-w-0"
               style={{ animationDelay: `${idx * 50}ms` }}
             >
-              <div className="bg-slate-50/80 dark:bg-slate-900/50 px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between group-hover:bg-indigo-50/50 dark:group-hover:bg-slate-700/50 transition-colors">
-                <span className="font-extrabold text-slate-700 dark:text-slate-200 text-lg group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors">
+              <div className="bg-slate-50/80 dark:bg-slate-900/50 px-4 sm:px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-3 group-hover:bg-indigo-50/50 dark:group-hover:bg-slate-700/50 transition-colors">
+                <span className="font-extrabold text-slate-700 dark:text-slate-200 text-base sm:text-lg group-hover:text-indigo-700 dark:group-hover:text-indigo-400 transition-colors truncate">
                   {dayNames[template.dayOfWeek]}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 transition-colors">
+                <div className="w-8 h-8 flex-shrink-0 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 transition-colors">
                   {template.items.length}
                 </div>
               </div>
@@ -63,12 +63,12 @@ export default function ScheduleView() {
                   </div>
                 ) : (
                   template.items.map((item, index) => (
-                    <div key={index} className="px-4 py-3 flex gap-4 text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors">
-                      <span className="font-extrabold text-indigo-500 dark:text-indigo-400 min-w-[60px] flex items-center gap-1.5 transition-colors">
-                        <Clock className="w-3.5 h-3.5" />
+                    <div key={index} className="px-3 sm:px-4 py-3 flex gap-3 sm:gap-4 text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors">
+                      <span className="font-extrabold text-indigo-500 dark:text-indigo-400 w-[4.5rem] flex-shrink-0 flex items-center gap-1.5 transition-colors">
+                        <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                         {item.time}
                       </span>
-                      <span className="text-slate-700 dark:text-slate-300 font-semibold transition-colors">{item.content}</span>
+                      <span className="text-slate-700 dark:text-slate-300 font-semibold transition-colors min-w-0 flex-1 break-words">{item.content}</span>
                     </div>
                   ))
                 )}

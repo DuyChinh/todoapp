@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Check, Target, Clock } from 'lucide-react';
 import { cn } from '../lib/utils';
 import api from '../lib/api';
@@ -52,37 +53,43 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 dark:from-emerald-900/20 to-transparent pointer-events-none z-0 transition-colors"></div>
       )}
 
-      <div className="px-6 py-8 sm:p-8 border-b border-indigo-50 dark:border-slate-800 flex items-center justify-between relative z-10 transition-colors">
-        <button onClick={onPrevDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600">
-          <ChevronLeft className="w-6 h-6" />
+      <div className="px-4 py-6 sm:px-8 sm:py-8 border-b border-indigo-50 dark:border-slate-800 flex items-center justify-between gap-3 relative z-10 transition-colors">
+        <button
+          onClick={onPrevDay}
+          className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600"
+        >
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
-        <div className="text-center space-y-1">
-          <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight transition-colors">
-            {format(currentDate, 'EEEE')}
+        <div className="text-center space-y-1 min-w-0 flex-1 px-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight transition-colors truncate capitalize">
+            {format(currentDate, 'EEEE', { locale: vi })}
           </h2>
-          <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider transition-colors">
-            {format(currentDate, 'MMMM d, yyyy')}
+          <p className="text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider transition-colors">
+            {format(currentDate, 'd MMMM, yyyy', { locale: vi })}
           </p>
         </div>
-        <button onClick={onNextDay} className="w-12 h-12 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600">
-          <ChevronRight className="w-6 h-6" />
+        <button
+          onClick={onNextDay}
+          className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300 rounded-full transition-all bg-slate-50 dark:bg-slate-800/50 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-slate-600"
+        >
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       </div>
 
-      <div className="px-6 py-8 sm:px-10 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 relative z-10 border-b border-indigo-50/50 dark:border-slate-800 transition-colors duration-300">
-        <div className="flex justify-between items-end mb-4">
-          <div>
+      <div className="px-4 py-6 sm:px-10 sm:py-8 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-900/20 dark:to-purple-900/20 relative z-10 border-b border-indigo-50/50 dark:border-slate-800 transition-colors duration-300">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 mb-4">
+          <div className="min-w-0">
             <div className="text-xs font-bold text-indigo-400 dark:text-indigo-300 uppercase tracking-wider mb-1 transition-colors">Mục tiêu hôm nay</div>
-            <div className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 transition-colors">
-              {progress}% <span className="text-base font-semibold text-slate-500 dark:text-slate-400 tracking-normal transition-colors">hoàn thành</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 transition-colors">
+              {progress}% <span className="text-sm sm:text-base font-semibold text-slate-500 dark:text-slate-400 tracking-normal transition-colors">hoàn thành</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-100/50 dark:bg-indigo-900/30 px-4 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800/50 transition-colors">
+          <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-100/50 dark:bg-indigo-900/30 px-3 sm:px-4 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800/50 transition-colors self-start sm:self-auto flex-shrink-0">
             <Target className="w-4 h-4" />
             {completedCount} / {totalCount} Task
           </div>
         </div>
-        <div className="w-full bg-slate-200/80 dark:bg-slate-800 rounded-full h-4 overflow-hidden shadow-inner p-0.5 transition-colors duration-300">
+        <div className="w-full bg-slate-200/80 dark:bg-slate-800 rounded-full h-3 sm:h-4 overflow-hidden shadow-inner p-0.5 transition-colors duration-300">
           <div 
             className={cn(
               "h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden",
@@ -95,7 +102,7 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
         </div>
       </div>
 
-      <div className="p-6 sm:p-10 space-y-4 relative z-10 bg-slate-50/30 dark:bg-slate-900/50 transition-colors duration-300">
+      <div className="p-4 sm:p-10 space-y-3 sm:space-y-4 relative z-10 bg-slate-50/30 dark:bg-slate-900/50 transition-colors duration-300">
         {loading ? (
           <div className="text-center py-12 text-slate-400 dark:text-slate-500 font-medium animate-pulse">Đang tải lịch trình...</div>
         ) : tasks.length === 0 ? (
@@ -112,16 +119,16 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
               key={task._id}
               onClick={() => toggleTask(task)}
               className={cn(
-                "group flex items-start gap-4 sm:gap-6 p-5 sm:p-6 rounded-[1.5rem] cursor-pointer transition-all duration-300 animate-slide-up",
+                "group flex items-start gap-3 sm:gap-6 p-4 sm:p-6 rounded-[1.5rem] cursor-pointer transition-all duration-300 animate-slide-up",
                 task.completed 
                   ? "bg-white/40 dark:bg-slate-800/40 shadow-sm border border-slate-200/50 dark:border-slate-700/50 opacity-70" 
                   : "bg-white dark:bg-slate-800 shadow-md shadow-indigo-100/40 dark:shadow-none border border-indigo-50 dark:border-slate-700 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100/60 dark:hover:border-slate-500"
               )}
               style={{ animationDelay: `${idx * 50}ms` }}
             >
-              <div className="mt-1 relative">
+              <div className="mt-0.5 relative flex-shrink-0">
                 <div className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-400",
+                  "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 transition-all duration-400",
                   task.completed 
                     ? "bg-emerald-500 border-emerald-500 scale-110" 
                     : "border-slate-300 dark:border-slate-600 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 bg-slate-50 dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-slate-800"
@@ -133,17 +140,17 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay }) {
                 )}
               </div>
               
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className={cn(
-                  "flex items-center gap-2 text-xs font-bold mb-2 uppercase tracking-wider transition-colors",
+                  "flex items-center gap-2 text-xs font-bold mb-1.5 sm:mb-2 uppercase tracking-wider transition-colors",
                   task.completed ? "text-slate-400 dark:text-slate-500" : "text-indigo-500 dark:text-indigo-400"
                 )}>
-                  <Clock className="w-3.5 h-3.5" />
+                  <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                   {task.time}
                 </div>
-                <div className="relative inline-block">
+                <div className="relative">
                   <span className={cn(
-                    "text-lg sm:text-xl font-bold transition-all duration-300",
+                    "text-base sm:text-xl font-bold transition-all duration-300 break-words",
                     task.completed ? "text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-100"
                   )}>
                     {task.content}
