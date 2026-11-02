@@ -79,7 +79,7 @@ export default function CountdownBanner({ onOpenBackup }) {
               </span>
             </div>
             <p className="text-xs text-indigo-200/80 font-medium">
-              Lộ trình Pomodoro 34 ngày bứt phá mục tiêu 180/180
+              Lộ trình Pomodoro 34 ngày bứt phá mục tiêu 120/180
             </p>
           </div>
         </div>

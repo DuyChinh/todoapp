@@ -59,7 +59,7 @@ export default function Sidebar({
                 </h1>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60">
-                    TARGET 180
+                    TARGET 120
                   </span>
                   <span className="text-[11px] font-medium text-slate-400">
                     06/12/2026
