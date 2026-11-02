@@ -4,7 +4,7 @@ import { vi } from 'date-fns/locale';
 import confetti from 'canvas-confetti';
 import { 
   ChevronLeft, ChevronRight, Check, Play, Clock, Sparkles, Plus, 
-  RotateCcw
+  RotateCcw, Pencil, Trash2, X
 } from 'lucide-react';
 import api from '../lib/api';
 import { playSuccessChord, playSoftClick } from '../lib/audio';
@@ -28,6 +28,7 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay, onStartPo
   const [filterType, setFilterType] = useState('all'); // 'all', 'focus', 'break'
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTask, setNewTask] = useState({ time: '20:00', content: '', durationMinutes: 25, category: 'bunpou', pomoSession: 'Pomo Tự chọn' });
+  const [editingTask, setEditingTask] = useState(null); // Task currently being edited
   const [celebrationToast, setCelebrationToast] = useState(null);
 
   const dateStr = format(currentDate, 'yyyy-MM-dd');
@@ -152,6 +153,80 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay, onStartPo
 
     setNewTask({ time: '20:00', content: '', durationMinutes: 25, category: 'bunpou', pomoSession: 'Pomo Tự chọn' });
     setShowAddModal(false);
+  };
+
+  // Open Edit Task Modal
+  const handleOpenEdit = (task) => {
+    playSoftClick();
+    setEditingTask({
+      _id: task._id,
+      time: task.time || '20:00',
+      content: task.content || '',
+      category: task.category || 'bunpou',
+      pomoSession: task.pomoSession || '',
+      durationMinutes: task.durationMinutes || 25,
+      isBreak: !!task.isBreak,
+      notes: task.notes || ''
+    });
+  };
+
+  // Save Edit Task
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editingTask || !editingTask.content.trim()) return;
+    playSoftClick();
+
+    const updatedData = {
+      time: editingTask.time,
+      content: editingTask.content.trim(),
+      category: editingTask.category,
+      pomoSession: editingTask.pomoSession.trim(),
+      durationMinutes: Number(editingTask.durationMinutes) || 25,
+      isBreak: editingTask.category === 'break' || !!editingTask.isBreak,
+      notes: editingTask.notes?.trim() || ''
+    };
+
+    // Optimistic update
+    const updatedTasks = tasks.map(t => 
+      t._id === editingTask._id ? { ...t, ...updatedData } : t
+    ).sort((a, b) => a.time.localeCompare(b.time));
+    setTasks(updatedTasks);
+    localStorage.setItem(`tasks_${dateStr}`, JSON.stringify(updatedTasks));
+
+    setCelebrationToast('Đã cập nhật phiên học thành công! ✨');
+    setTimeout(() => setCelebrationToast(null), 3000);
+
+    try {
+      if (!String(editingTask._id).startsWith('local_')) {
+        await api.put(`/tasks/${editingTask._id}`, updatedData);
+      }
+    } catch {
+      // ignore
+    }
+
+    setEditingTask(null);
+  };
+
+  // Delete Task
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm('Bạn có chắc muốn xóa nhiệm vụ này khỏi lịch hôm nay?')) return;
+    playSoftClick();
+
+    const updatedTasks = tasks.filter(t => t._id !== taskId);
+    setTasks(updatedTasks);
+    localStorage.setItem(`tasks_${dateStr}`, JSON.stringify(updatedTasks));
+
+    try {
+      if (!String(taskId).startsWith('local_')) {
+        await api.delete(`/tasks/${taskId}`);
+      }
+    } catch {
+      // ignore
+    }
+
+    if (editingTask && editingTask._id === taskId) {
+      setEditingTask(null);
+    }
   };
 
   // Filter tasks
@@ -372,11 +447,27 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay, onStartPo
                     }`}>
                       {task.content}
                     </div>
+
+                    {task.notes && (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-0.5">
+                        {task.notes}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Right section: Play in Pomodoro Button */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Right section: Action Buttons (Play & Edit) */}
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                  {/* Edit button */}
+                  <button
+                    onClick={() => handleOpenEdit(task)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                    title="Chỉnh sửa nhiệm vụ này"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+
+                  {/* Play in Pomodoro Button */}
                   <button
                     onClick={() => {
                       if (onStartPomodoro) {
@@ -400,6 +491,157 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay, onStartPo
         )}
       </div>
 
+      {/* Edit Task Modal */}
+      {editingTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-slide-up">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 relative">
+            <button
+              onClick={() => setEditingTask(null)}
+              className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
+                <Pencil className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">
+                  Chỉnh Sửa Phiên Học
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Cập nhật thời gian, nội dung và phân loại bài học
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                    Giờ bắt đầu
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTask.time}
+                    onChange={(e) => setEditingTask({ ...editingTask, time: e.target.value })}
+                    placeholder="20:00"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                    Tên phiên / Nhãn
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTask.pomoSession}
+                    onChange={(e) => setEditingTask({ ...editingTask, pomoSession: e.target.value })}
+                    placeholder="VD: Pomo 1, Thi thử 105p..."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  Nội dung nhiệm vụ
+                </label>
+                <textarea
+                  value={editingTask.content}
+                  onChange={(e) => setEditingTask({ ...editingTask, content: e.target.value })}
+                  placeholder="Nội dung chi tiết..."
+                  rows="3"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                    Phân loại
+                  </label>
+                  <select
+                    value={editingTask.category}
+                    onChange={(e) => setEditingTask({ 
+                      ...editingTask, 
+                      category: e.target.value,
+                      isBreak: e.target.value === 'break' 
+                    })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="vocab">Flashcard / Từ vựng</option>
+                    <option value="moji-goi">Moji-Goi (Kanji)</option>
+                    <option value="bunpou">Bunpou (Ngữ pháp)</option>
+                    <option value="dokkai">Dokkai (Đọc hiểu)</option>
+                    <option value="choukai">Choukai (Nghe hiểu)</option>
+                    <option value="mock_exam">Thi thử (Mock Exam)</option>
+                    <option value="review">Tổng kết / Lỗi sai</option>
+                    <option value="break">Nghỉ ngơi ☕</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                    Thời lượng (phút)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingTask.durationMinutes}
+                    onChange={(e) => setEditingTask({ ...editingTask, durationMinutes: Number(e.target.value) })}
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  Ghi chú riêng (Tùy chọn)
+                </label>
+                <input
+                  type="text"
+                  value={editingTask.notes}
+                  onChange={(e) => setEditingTask({ ...editingTask, notes: e.target.value })}
+                  placeholder="Ghi chú thêm tài liệu, trang sách..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTask(editingTask._id)}
+                  className="px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Xóa task này</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingTask(null)}
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/25 transition-all"
+                  >
+                    Lưu thay đổi
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Add Task Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-slide-up">
@@ -418,7 +660,7 @@ export default function DailyView({ currentDate, onPrevDay, onNextDay, onStartPo
                   value={newTask.time}
                   onChange={(e) => setNewTask({ ...newTask, time: e.target.value })}
                   placeholder="20:00"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
                   required
                 />
               </div>
