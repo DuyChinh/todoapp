@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Volume2, VolumeX, Download, Target } from 'lucide-react';
-import { isSoundEnabled, toggleSound } from '../lib/audio';
+import { Volume2, VolumeX, Download, Target, Flame, RefreshCw, Award } from 'lucide-react';
+import { isSoundEnabled, toggleSound, playSoftClick } from '../lib/audio';
 import { quotes } from '../data/quotes';
 
 // JLPT N2 Exam time: 08:00 AM on 06/12/2026
@@ -49,6 +49,11 @@ export default function CountdownBanner({ onOpenBackup }) {
     setSoundOn(updated);
   };
 
+  const handleNextQuote = () => {
+    playSoftClick();
+    setQuoteIndex((prev) => (prev + 1) % quotes.length);
+  };
+
   // Sprint Progress calculation
   const totalSprintMs = EXAM_DATE.getTime() - SPRINT_START.getTime();
   const elapsedMs = Math.max(0, new Date().getTime() - SPRINT_START.getTime());
@@ -57,109 +62,154 @@ export default function CountdownBanner({ onOpenBackup }) {
 
   const currentQuote = quotes[quoteIndex];
 
-  return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white shadow-2xl border border-indigo-500/20 p-5 sm:p-7 mb-6">
-      {/* Decorative background glow */}
-      <div className="absolute -top-24 -right-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+  const countdownUnits = [
+    { label: 'NGÀY CÒN LẠI', sub: 'Days', value: String(timeLeft.days).padStart(2, '0'), accent: 'from-rose-500 to-orange-500', textGrad: 'from-white via-rose-100 to-rose-200' },
+    { label: 'GIỜ', sub: 'Hours', value: String(timeLeft.hours).padStart(2, '0'), accent: 'from-indigo-500 to-purple-500', textGrad: 'from-white via-indigo-100 to-indigo-200' },
+    { label: 'PHÚT', sub: 'Minutes', value: String(timeLeft.minutes).padStart(2, '0'), accent: 'from-purple-500 to-pink-500', textGrad: 'from-white via-purple-100 to-purple-200' },
+    { label: 'GIÂY', sub: 'Seconds', value: String(timeLeft.seconds).padStart(2, '0'), accent: 'from-emerald-400 to-teal-500', textGrad: 'from-emerald-200 via-teal-100 to-white' }
+  ];
 
-      {/* Top Bar: Title & Control buttons */}
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-indigo-500/20">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-rose-500/20 flex-shrink-0">
-            <span className="text-xl font-black text-white">N2</span>
+  return (
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white shadow-2xl shadow-indigo-950/25 border border-indigo-500/25 p-5 sm:p-7">
+      {/* Decorative aurora glow orbs */}
+      <div className="absolute -top-28 -right-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-28 -left-20 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top Bar: Title, Target Badges & Control buttons */}
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-white/10">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="relative flex-shrink-0">
+            <div className="absolute -inset-1 bg-gradient-to-tr from-rose-500 to-indigo-500 rounded-2xl blur-sm opacity-70" />
+            <div className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-rose-500 via-purple-600 to-indigo-500 flex flex-col items-center justify-center shadow-lg border border-white/25 p-2">
+              <span className="text-[9px] font-black text-rose-100 tracking-widest uppercase font-jp leading-none">必勝</span>
+              <span className="text-xl sm:text-2xl font-black text-white leading-tight">N2</span>
+            </div>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
-                JLPT N2 SPRINT TRACKER
-              </h1>
-              <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                06/12/2026
+
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-500/25 text-indigo-200 border border-indigo-400/30 font-jp">
+                日本語能力試験 • 06/12/2026
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-gradient-to-r from-rose-500/30 to-amber-500/30 text-amber-200 border border-amber-400/40 shadow-sm">
+                <Award className="w-3 h-3 text-amber-300" />
+                MỤC TIÊU: 120 / 180 ĐIỂM
               </span>
             </div>
-            <p className="text-xs text-indigo-200/80 font-medium">
-              Lộ trình Pomodoro 34 ngày bứt phá mục tiêu 120/180
-            </p>
+
+            <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white">
+              Chiến Dịch Nước Rút Chinh Phục JLPT N2
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-indigo-200/80 font-semibold">
+              <span>🎯 Từ vựng & Ngữ pháp: <strong className="text-white">40+/60</strong></span>
+              <span className="text-indigo-500">•</span>
+              <span>📖 Đọc hiểu: <strong className="text-white">40+/60</strong></span>
+              <span className="text-indigo-500">•</span>
+              <span>🎧 Nghe hiểu: <strong className="text-white">40+/60</strong></span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end md:self-auto">
+        {/* Right Controls */}
+        <div className="flex items-center gap-2 self-end lg:self-center">
           {/* Sound Toggle */}
           <button
             onClick={handleToggleSound}
-            className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3.5 py-2 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all ${
               soundOn
-                ? 'bg-indigo-600/30 border-indigo-400/40 text-indigo-200 hover:bg-indigo-600/50'
-                : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+                ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/25 shadow-sm'
+                : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200'
             }`}
             title={soundOn ? 'Âm thanh: BẬT (Ấn để tắt)' : 'Âm thanh: TẮT (Ấn để bật)'}
           >
             {soundOn ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-slate-400" />}
-            <span className="hidden sm:inline">{soundOn ? 'Âm thanh' : 'Tắt âm'}</span>
+            <span>{soundOn ? 'Âm báo: Bật' : 'Âm báo: Tắt'}</span>
           </button>
 
           {/* Backup / Restore */}
           <button
             onClick={onOpenBackup}
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-white flex items-center gap-2 transition-all backdrop-blur-md shadow-sm"
             title="Sao lưu / Khôi phục dữ liệu JSON"
           >
-            <Download className="w-4 h-4 text-indigo-400" />
-            <span className="hidden sm:inline">Sao lưu</span>
+            <Download className="w-4 h-4 text-indigo-300" />
+            <span className="hidden sm:inline">Backup Dữ Liệu</span>
           </button>
         </div>
       </div>
 
-      {/* Main Countdown grid */}
+      {/* Main Countdown 4-Card Grid */}
       <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 my-5">
-        {[
-          { label: 'NGÀY', value: timeLeft.days },
-          { label: 'GIỜ', value: String(timeLeft.hours).padStart(2, '0') },
-          { label: 'PHÚT', value: String(timeLeft.minutes).padStart(2, '0') },
-          { label: 'GIÂY', value: String(timeLeft.seconds).padStart(2, '0') }
-        ].map((item, idx) => (
+        {countdownUnits.map((item, idx) => (
           <div
             key={idx}
-            className="bg-slate-900/70 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-indigo-500/20 text-center relative overflow-hidden group hover:border-indigo-400/40 transition-colors"
+            className="relative rounded-2xl bg-slate-900/75 backdrop-blur-xl p-3.5 sm:p-4 border border-white/10 hover:border-indigo-400/40 transition-all duration-300 group overflow-hidden shadow-inner"
           >
-            <div className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-indigo-100 tabular-nums">
-              {item.value}
-            </div>
-            <div className="text-[10px] sm:text-xs font-bold text-indigo-300/70 tracking-widest uppercase mt-1">
-              {item.label}
+            {/* Top gradient accent line */}
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.accent} opacity-85 group-hover:opacity-100 transition-opacity`} />
+
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b ${item.textGrad} font-mono tabular-nums drop-shadow-sm`}>
+                {item.value}
+              </div>
+              <div className="flex items-center gap-1 mt-1.5">
+                <span className="text-[10px] sm:text-[11px] font-extrabold text-indigo-200/90 tracking-wider uppercase">
+                  {item.label}
+                </span>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Sprint Progress bar & Motivational quote */}
-      <div className="relative z-10 pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        {/* Progress bar */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-            <span className="text-indigo-200 flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-rose-400" />
-              Tiến độ Sprint: Ngày {currentSprintDay}/35
+      {/* Bottom: Sprint Progress bar & Interactive Motivational Quote */}
+      <div className="relative z-10 pt-2 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        {/* Progress bar (7 cols on lg) */}
+        <div className="lg:col-span-6 space-y-2 bg-slate-900/50 rounded-2xl p-3.5 border border-white/10">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-indigo-100 flex items-center gap-1.5">
+              <Target className="w-4 h-4 text-rose-400" />
+              <span>Chặng đường Sprint 35 ngày: <strong className="text-white">Ngày {currentSprintDay}/35</strong></span>
             </span>
-            <span className="text-rose-300">{sprintProgressPercent}% chặng đường</span>
+            <span className="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono text-[11px]">
+              {sprintProgressPercent}% hoàn thành
+            </span>
           </div>
-          <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60 relative">
+
+          <div className="w-full h-3 bg-slate-800/90 rounded-full overflow-hidden border border-slate-700/70 p-0.5 relative">
             <div
-              className="h-full bg-gradient-to-r from-rose-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-1000 shadow-lg shadow-rose-500/30"
-              style={{ width: `${Math.max(4, sprintProgressPercent)}%` }}
-            />
+              className="h-full bg-gradient-to-r from-rose-500 via-indigo-500 to-emerald-400 rounded-full transition-all duration-1000 relative overflow-hidden"
+              style={{ width: `${Math.max(5, sprintProgressPercent)}%` }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+            </div>
           </div>
         </div>
 
-        {/* Motivational Quote banner */}
-        <div className="sm:max-w-md bg-indigo-900/40 border border-indigo-400/20 rounded-xl px-3.5 py-2 flex items-center gap-2.5 text-xs text-indigo-100">
-          <Sparkles className="w-4 h-4 text-amber-300 flex-shrink-0 animate-pulse" />
-          <div className="min-w-0 truncate">
-            <span className="font-bold text-amber-200 mr-1.5">{currentQuote.jp}</span>
-            <span className="opacity-80 truncate">{currentQuote.vi}</span>
+        {/* Motivational Quote banner (6 cols on lg) */}
+        <button
+          type="button"
+          onClick={handleNextQuote}
+          className="lg:col-span-6 w-full text-left bg-gradient-to-r from-indigo-900/50 via-purple-900/40 to-slate-900/60 hover:from-indigo-900/70 hover:to-purple-900/60 border border-indigo-400/25 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs text-indigo-100 transition-all group"
+          title="Nhấn để đổi câu châm ngôn tiếp lửa"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+              <Flame className="w-4 h-4 text-amber-300 fill-amber-300 group-hover:scale-110 transition-transform" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-black text-amber-200 text-xs sm:text-sm truncate font-jp">
+                {currentQuote.jp}
+              </div>
+              <div className="text-indigo-100/85 text-[11px] sm:text-xs font-medium truncate mt-0.5">
+                "{currentQuote.vi}"
+              </div>
+            </div>
           </div>
-        </div>
+          <RefreshCw className="w-3.5 h-3.5 text-indigo-300/60 group-hover:text-white group-hover:rotate-180 transition-all duration-300 flex-shrink-0" />
+        </button>
       </div>
     </div>
   );
