@@ -154,7 +154,7 @@ export function playSoftClick() {
 
     osc.start(now);
     osc.stop(now + 0.04);
-  } catch (e) {
+  } catch {
     // ignore
   }
 }

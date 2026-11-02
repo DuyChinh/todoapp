@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { Play, Pause, RotateCcw, SkipForward, Coffee, CheckCircle2, Flame } from 'lucide-react';
 import { playBell, playBreakChime, playSuccessChord, playSoftClick } from '../lib/audio';
@@ -24,7 +24,7 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
 
   const timerRef = useRef(null);
 
-  const setMode = (mode) => {
+  const setMode = useCallback((mode) => {
     setIsRunning(false);
     setCurrentMode(mode);
     setTimeLeft(mode.duration);
@@ -33,7 +33,7 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
       setRandomTip(tip);
     }
     playSoftClick();
-  };
+  }, []);
 
   // Sync when activeTask changes
   useEffect(() => {
@@ -52,9 +52,9 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
         setMode(MODES.FOCUS);
       }
     }
-  }, [activeTask]);
+  }, [activeTask, setMode]);
 
-  const triggerConfetti = () => {
+  const triggerConfetti = useCallback(() => {
     try {
       confetti({
         particleCount: 80,
@@ -64,9 +64,9 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
     } catch {
       // ignore
     }
-  };
+  }, []);
 
-  const handleTimerComplete = () => {
+  const handleTimerComplete = useCallback(() => {
     setIsRunning(false);
 
     if (!currentMode.isBreak) {
@@ -93,7 +93,7 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
       setEncouragement('Hết giờ nghỉ! Hãy sẵn sàng cho phiên Pomodoro tiếp theo 🚀');
       setMode(MODES.FOCUS);
     }
-  };
+  }, [currentMode, completedSessions, setMode, triggerConfetti]);
 
   useEffect(() => {
     if (isRunning) {
@@ -112,7 +112,7 @@ export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
     }
 
     return () => clearInterval(timerRef.current);
-  }, [isRunning, currentMode, completedSessions]);
+  }, [isRunning, handleTimerComplete]);
 
   const toggleTimer = () => {
     playSoftClick();
