@@ -124,3 +124,4 @@ export function importAppData(jsonString) {
     return false;
   }
 }
+
