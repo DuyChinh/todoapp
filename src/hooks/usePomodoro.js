@@ -16,10 +16,18 @@ const ORIGINAL_TITLE = typeof document !== 'undefined' ? document.title : '';
 const pad = (n) => String(n).padStart(2, '0');
 export const formatTime = (secs) => `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`;
 
+const getPermission = () => (typeof Notification === 'undefined' ? 'unsupported' : Notification.permission);
+
 function notify(title, body) {
   try {
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-    const n = new Notification(title, { body, icon: '/favicon.svg', tag: 'pomodoro-timer', requireInteraction: false });
+    const n = new Notification(title, {
+      body,
+      icon: '/favicon.svg',
+      tag: 'pomodoro-timer',
+      renotify: true,
+      requireInteraction: true // stay on screen until the user clicks, like Facebook
+    });
     n.onclick = () => {
       window.focus();
       n.close();
@@ -41,6 +49,8 @@ export function usePomodoro(activeTask) {
   const [completedSessions, setCompletedSessions] = useState(() => Number(localStorage.getItem('n2_pomo_count') || 0));
   const [randomTip, setRandomTip] = useState(relaxationTips[0]);
   const [encouragement, setEncouragement] = useState('');
+
+  const [notifPermission, setNotifPermission] = useState(getPermission);
 
   const endAtRef = useRef(0);
   const tickRef = useRef(() => {});
@@ -146,13 +156,24 @@ export function usePomodoro(activeTask) {
 
   useEffect(() => () => { document.title = ORIGINAL_TITLE; }, []);
 
+  const enableNotifications = useCallback(async () => {
+    if (typeof Notification === 'undefined') return;
+    try {
+      const result = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+      setNotifPermission(result);
+      if (result === 'granted') notify('🔔 Đã bật thông báo', 'Bạn sẽ nhận thông báo khi hết giờ Pomodoro.');
+    } catch {
+      setNotifPermission(getPermission());
+    }
+  }, []);
+
   const toggleTimer = () => {
     playSoftClick();
     if (!isRunning) {
       endAtRef.current = Date.now() + timeLeft * 1000;
       try {
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-          Notification.requestPermission();
+          Notification.requestPermission().then(setNotifPermission);
         }
       } catch {
         // ignore
@@ -181,6 +202,6 @@ export function usePomodoro(activeTask) {
 
   return {
     currentMode, timeLeft, isRunning, completedSessions, randomTip, encouragement,
-    setEncouragement, setMode, toggleTimer, resetTimer, skipTimer, adjustTime, triggerConfetti
+    setEncouragement, notifPermission, enableNotifications, setMode, toggleTimer, resetTimer, skipTimer, adjustTime, triggerConfetti
   };
 }

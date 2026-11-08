@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Play, Pause, RotateCcw, SkipForward, Coffee, CheckCircle2, 
-  Flame, Sparkles, Plus, Minus, Zap 
+  Flame, Sparkles, Plus, Minus, Zap, Bell, BellOff 
 } from 'lucide-react';
 import { playSuccessChord } from '../lib/audio';
 import { completionMessages } from '../data/quotes';
@@ -10,7 +10,7 @@ import { MODES } from '../hooks/usePomodoro';
 export default function PomodoroTimer({ pomodoro, activeTask, onCompleteActiveTask }) {
   const {
     currentMode, timeLeft, isRunning, completedSessions, randomTip, encouragement,
-    setEncouragement, setMode, toggleTimer, resetTimer, skipTimer, adjustTime, triggerConfetti
+    setEncouragement, notifPermission, enableNotifications, setMode, toggleTimer, resetTimer, skipTimer, adjustTime, triggerConfetti
   } = pomodoro;
 
   const handleManualCompleteTask = () => {
@@ -91,6 +91,23 @@ export default function PomodoroTimer({ pomodoro, activeTask, onCompleteActiveTa
           </div>
         </div>
       </div>
+
+      {/* Browser notification permission */}
+      {notifPermission === 'default' && (
+        <button
+          onClick={enableNotifications}
+          className="relative z-10 w-full mb-5 p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-300 text-xs font-extrabold flex items-center justify-center gap-2 hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors"
+        >
+          <Bell className="w-4 h-4" />
+          Bấm để bật thông báo Chrome khi hết giờ
+        </button>
+      )}
+      {notifPermission === 'denied' && (
+        <div className="relative z-10 mb-5 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+          <BellOff className="w-4 h-4 flex-shrink-0" />
+          Thông báo đang bị chặn. Bấm biểu tượng ổ khóa cạnh thanh địa chỉ → Thông báo → Cho phép.
+        </div>
+      )}
 
       {/* Mode Selectors */}
       <div className="relative z-10 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-6">
