@@ -1,138 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import confetti from 'canvas-confetti';
+import React from 'react';
 import { 
   Play, Pause, RotateCcw, SkipForward, Coffee, CheckCircle2, 
   Flame, Sparkles, Plus, Minus, Zap 
 } from 'lucide-react';
-import { playBell, playBreakChime, playSuccessChord, playSoftClick } from '../lib/audio';
-import { relaxationTips, completionMessages } from '../data/quotes';
+import { playSuccessChord } from '../lib/audio';
+import { completionMessages } from '../data/quotes';
+import { MODES } from '../hooks/usePomodoro';
 
-const MODES = {
-  FOCUS: { id: 'FOCUS', label: 'Tập trung (Focus)', shortLabel: 'Focus 25p', duration: 25 * 60, isBreak: false, color: 'indigo' },
-  SHORT_BREAK: { id: 'SHORT_BREAK', label: 'Nghỉ ngắn (5p)', shortLabel: 'Nghỉ 5p', duration: 5 * 60, isBreak: true, color: 'emerald' },
-  LONG_BREAK: { id: 'LONG_BREAK', label: 'Nghỉ dài (15p)', shortLabel: 'Nghỉ dài 15p', duration: 15 * 60, isBreak: true, color: 'amber' },
-  MOCK_105: { id: 'MOCK_105', label: 'Thi thử Ngôn ngữ + Đọc (105p)', shortLabel: 'Đề 105p', duration: 105 * 60, isBreak: false, color: 'rose' },
-  MOCK_50: { id: 'MOCK_50', label: 'Thi thử Nghe hiểu (50p)', shortLabel: 'Nghe 50p', duration: 50 * 60, isBreak: false, color: 'purple' }
-};
-
-export default function PomodoroTimer({ activeTask, onCompleteActiveTask }) {
-  const [currentMode, setCurrentMode] = useState(MODES.FOCUS);
-  const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.duration);
-  const [isRunning, setIsRunning] = useState(false);
-  const [completedSessions, setCompletedSessions] = useState(() => {
-    return Number(localStorage.getItem('n2_pomo_count') || 0);
-  });
-  const [randomTip, setRandomTip] = useState(relaxationTips[0]);
-  const [encouragement, setEncouragement] = useState('');
-
-  const timerRef = useRef(null);
-
-  const setMode = useCallback((mode) => {
-    setIsRunning(false);
-    setCurrentMode(mode);
-    setTimeLeft(mode.duration);
-    if (mode.isBreak) {
-      const tip = relaxationTips[Math.floor(Math.random() * relaxationTips.length)];
-      setRandomTip(tip);
-    }
-    playSoftClick();
-  }, []);
-
-  // Sync when activeTask changes
-  useEffect(() => {
-    if (activeTask) {
-      if (activeTask.durationMinutes === 105) {
-        setMode(MODES.MOCK_105);
-      } else if (activeTask.durationMinutes === 50) {
-        setMode(MODES.MOCK_50);
-      } else if (activeTask.isBreak) {
-        if (activeTask.durationMinutes >= 15) {
-          setMode(MODES.LONG_BREAK);
-        } else {
-          setMode(MODES.SHORT_BREAK);
-        }
-      } else {
-        setMode(MODES.FOCUS);
-      }
-    }
-  }, [activeTask, setMode]);
-
-  const triggerConfetti = useCallback(() => {
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  const handleTimerComplete = useCallback(() => {
-    setIsRunning(false);
-
-    if (!currentMode.isBreak) {
-      playBell();
-      const newCount = completedSessions + 1;
-      setCompletedSessions(newCount);
-      localStorage.setItem('n2_pomo_count', String(newCount));
-
-      triggerConfetti();
-      const msg = completionMessages[Math.floor(Math.random() * completionMessages.length)];
-      setEncouragement(msg);
-
-      if (newCount % 4 === 0) {
-        setMode(MODES.LONG_BREAK);
-      } else {
-        setMode(MODES.SHORT_BREAK);
-      }
-    } else {
-      playBreakChime();
-      setEncouragement('Hết giờ nghỉ! Hãy sẵn sàng cho phiên Pomodoro tiếp theo 🚀');
-      setMode(MODES.FOCUS);
-    }
-  }, [currentMode, completedSessions, setMode, triggerConfetti]);
-
-  useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            handleTimerComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(timerRef.current);
-    }
-
-    return () => clearInterval(timerRef.current);
-  }, [isRunning, handleTimerComplete]);
-
-  const toggleTimer = () => {
-    playSoftClick();
-    setIsRunning(!isRunning);
-  };
-
-  const resetTimer = () => {
-    playSoftClick();
-    setIsRunning(false);
-    setTimeLeft(currentMode.duration);
-  };
-
-  const skipTimer = () => {
-    playSoftClick();
-    handleTimerComplete();
-  };
-
-  const adjustTime = (deltaSeconds) => {
-    playSoftClick();
-    setTimeLeft((prev) => Math.max(60, Math.min(180 * 60, prev + deltaSeconds)));
-  };
+export default function PomodoroTimer({ pomodoro, activeTask, onCompleteActiveTask }) {
+  const {
+    currentMode, timeLeft, isRunning, completedSessions, randomTip, encouragement,
+    setEncouragement, setMode, toggleTimer, resetTimer, skipTimer, adjustTime, triggerConfetti
+  } = pomodoro;
 
   const handleManualCompleteTask = () => {
     triggerConfetti();

@@ -4,6 +4,7 @@ import { vi } from 'date-fns/locale';
 import Sidebar from './components/Sidebar';
 import CountdownBanner from './components/CountdownBanner';
 import PomodoroTimer from './components/PomodoroTimer';
+import { usePomodoro } from './hooks/usePomodoro';
 import DailyView from './components/DailyView';
 import MockExamTracker from './components/MockExamTracker';
 import QuickErrorLog from './components/QuickErrorLog';
@@ -21,6 +22,7 @@ function App() {
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [nowTime, setNowTime] = useState(new Date());
+  const pomodoro = usePomodoro(activeTask);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -162,6 +164,7 @@ function App() {
           {view === 'daily' && (
             <div className="space-y-6">
               <PomodoroTimer 
+                pomodoro={pomodoro}
                 activeTask={activeTask} 
                 onCompleteActiveTask={handleCompleteActiveTask} 
               />
@@ -182,6 +185,7 @@ function App() {
           {view === 'timer' && (
             <div className="max-w-3xl mx-auto">
               <PomodoroTimer 
+                pomodoro={pomodoro}
                 activeTask={activeTask} 
                 onCompleteActiveTask={handleCompleteActiveTask} 
               />
